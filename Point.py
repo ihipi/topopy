@@ -13,24 +13,41 @@ Created on 15 set. 2015
  
 from __future__ import unicode_literals
 from FreeCAD import Base
-import Draft, Part
+import Part, easygui
+import Draft_topo
+import FreeCAD
+
+fitxer = easygui.fileopenbox('Tria un fitxer de punts (nom, x, y, z, codi)')                     # path and name of file.txt
  
-fichier = "C:\yourPath\cloud.asc"                          # path and name of file.txt
- 
-file = open(fichier, "r")                                  # open the file read
+file = open(fitxer, "r")                                  # open the file read
 wire = []
+codis =[]
 X=Y=Z = 0.0
- 
-for ligne in file:
-    coordinates = ligne.split()
-    X,Y,Z = coordinates                                     # separate the coordinates
-#    Draft.makePoint(float(X),float(Y),float(Z))            # create points (uncomment for use)
+grp =  easygui.enterbox('tria un nom de grup')
+
+doc = FreeCAD.activeDocument()
+grup = doc.addObject("App::DocumentObjectGroup", grp )
+
+code_list={}
+
+for linia in file:
+    coordinates = linia.split('\t')
+    N,X,Y,Z,C = coordinates                                     # separate the coordinates
+    p = Draft_topo.makePoint(float(X),float(Y),float(Z),N,C)         # create points (uncomment for use)
+    p.Label = str(N)
+    grup.addObject(p)
     print X," ",Y," ",Z
-    wire.append(FreeCAD.Vector(float(X),float(Y),float(Z))) # append the coordinates
+    if not code_list.has_key(C):
+        codis.append(C)
+        code_list={C:[]}
+    
+    
+    code_list[C].append(FreeCAD.Vector(float(X),float(Y),float(Z))) # append the coordinates
  
 file.close()
-Draft.makeWire(wire,closed=False,face=False,support=None)   # create the wire open
-#Draft.makeWire(wire,closed=True,face=False,support=None)   # create the wire closed (uncomment for use)
+for code in code_list.keys():
+    Draft_topo.makeWire(code_list[code],closed=False,face=False,support=None)   # create the wire open
+#Draft_topo.makeWire(wire,closed=True,face=False,support=None)   # create the wire closed (uncomment for use)
 '''
 administrar un grup
 doc=App.activeDocument()
