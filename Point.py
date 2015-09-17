@@ -17,38 +17,40 @@ import Part, easygui
 import Draft_topo
 import FreeCAD
 
-fitxer = easygui.fileopenbox('Tria un fitxer de punts (nom, x, y, z, codi)')                     # path and name of file.txt
- 
-file = open(fitxer, "r")                                  # open the file read
-wire = []
-codis =[]
-X=Y=Z = 0.0
-grp =  easygui.enterbox('tria un nom de grup')
-
-doc = FreeCAD.activeDocument()
-grup = doc.addObject("App::DocumentObjectGroup", grp )
-
-code_list={}
-
-for linia in file:
-    coordinates = linia.split('\t')
-    N,X,Y,Z,C = coordinates                                     # separate the coordinates
-    p = Draft_topo.makePoint(float(X),float(Y),float(Z),N,C)         # create points (uncomment for use)
-    p.Label = str(N)
-    grup.addObject(p)
-    print X," ",Y," ",Z
-    if not code_list.has_key(C):
-        codis.append(C)
-        code_list={C:[]}
+class FreeTopo():
+    def __init__(self):
+        pass
+    def importa(self, fitxer=None, grup = None):
+        if fitxer == None:
+            fitxer = easygui.fileopenbox('Tria un fitxer de punts (nom, x, y, z, codi)')                     # path and name of file.txt
+        if grup == None:
+            grup =  easygui.enterbox('tria un nom de grup')
+        doc = FreeCAD.activeDocument()
+        grp = doc.addObject("App::DocumentObjectGroup", grup )
+        
+        file = open(fitxer, "r")                                  # open the file read
+        X=Y=Z = 0.0
+        
+        for linia in file:
+            coordinates = linia.split('\t')
+            N,X,Y,Z,C = coordinates                                     # separate the coordinates
+            p = Draft_topo.makePoint(float(X),float(Y),float(Z),N,C)         # create points (uncomment for use)
+            p.Label = str(N)
+            grp.addObject(p)
+            #print N," ",X," ",Y," ",Z," ",C
     
+            codis.append(C)
+            code_list.append(FreeCAD.Vector(float(X),float(Y),float(Z))) # append the coordinates
     
-    code_list[C].append(FreeCAD.Vector(float(X),float(Y),float(Z))) # append the coordinates
- 
-file.close()
+            print codis, code_list
+            file.close()
+        return  set(codis)
+'''
 for code in code_list.keys():
     Draft_topo.makeWire(code_list[code],closed=False,face=False,support=None)   # create the wire open
+    
 #Draft_topo.makeWire(wire,closed=True,face=False,support=None)   # create the wire closed (uncomment for use)
-'''
+
 administrar un grup
 doc=App.activeDocument()
 grp=doc.addObject("App::DocumentObjectGroup", "Group")
