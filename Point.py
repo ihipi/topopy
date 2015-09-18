@@ -28,7 +28,7 @@ def importa(fitxer=None, grup = None):
     file = open(fitxer, "r")                                  # open the file read
     X=Y=Z = 0.0
     codis = []
-    code_list = []
+    llista_punts = []
     for linia in file:
         coordinates = linia.split('\t')
         N,X,Y,Z,C = coordinates                                     # separate the coordinates
@@ -39,19 +39,24 @@ def importa(fitxer=None, grup = None):
         if C not in codis:
             codis.append(C)
             
-        code_list.append([C,FreeCAD.Vector(float(X),float(Y),float(Z))]) # append the coordinates
+        llista_punts.append([C,FreeCAD.Vector(float(X),float(Y),float(Z))]) # append the coordinates
     if easygui.boolbox("Vols unir per codis"):
         print "YES"
+        #tria = easygui.multchoicebox('tria els codis que vols fer linia', 'check codes',codis)
+        #tria = easygui.multchoicebox('tria els codis que vols fer linia', 'check codes', codis)
+        #print 'resultat seleccio de codis\n', tria
         for codi in codis:
-            line =[]
-            for vector in code_list:
-                if vector[0] == codi: 
-                    line.append(vector[1])  
-            print line
-            wire=Draft_topo.makeWire(line,closed=False,face=False,support=None)   # create the wire open
-            wire.Label = codi
-            grp.addObject(wire)
-    print codis, code_list
+            text="Vols unir el codi:"+ str(codi)
+            if easygui.boolbox(text):
+                line =[]
+                for vector in llista_punts:
+                    if vector[0] == codi: 
+                        line.append(vector[1])  
+                print line
+                wire=Draft_topo.makeWire(line,closed=False,face=False,support=None)   # create the wire open
+                wire.Label = codi
+                grp.addObject(wire)
+    #print codis, llista_punts
     file.close()
     return  set(codis)
 
