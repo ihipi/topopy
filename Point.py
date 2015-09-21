@@ -13,11 +13,11 @@ Created on 15 set. 2015
  
 from __future__ import unicode_literals
 from FreeCAD import Base
-import Part, easygui
+import easygui
 import Draft_topo
 import FreeCAD
 
-def importa(fitxer=None, grup = None):
+def importa(fitxer=None, grup = None, codis_check=[]):
     if fitxer == None:
         fitxer = easygui.fileopenbox('Tria un fitxer de punts (nom, x, y, z, codi)')                     # path and name of file.txt
     if grup == None:
@@ -40,9 +40,8 @@ def importa(fitxer=None, grup = None):
             codis.append(C)
             
         code_list.append([C,FreeCAD.Vector(float(X),float(Y),float(Z))]) # append the coordinates
-    if easygui.boolbox("Vols unir per codis"):
-        print "YES"
-        for codi in codis:
+    
+        for codi in codis_check:
             line =[]
             for vector in code_list:
                 if vector[0] == codi: 
@@ -51,9 +50,10 @@ def importa(fitxer=None, grup = None):
             wire=Draft_topo.makeWire(line,closed=False,face=False,support=None)   # create the wire open
             wire.Label = codi
             grp.addObject(wire)
-    print codis, code_list
+    #print codis, code_list
     file.close()
     return  set(codis)
+
 
 '''
 for code in code_list.keys():
