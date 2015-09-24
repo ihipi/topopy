@@ -9,6 +9,7 @@ from tkinter import IntVar, Checkbutton, Frame, Grid
 from tkinter.messagebox import askyesno
 from tkinter.constants import LEFT
 from tkinter.tix import ROW
+from Point import importa
 
 
 class Application(Frame):
@@ -30,8 +31,8 @@ def openfile():
     nam = name.split("/")
     g=nam[-1].split(".")
     grup= g[0]
-    print(nam,g)
-    print(grup)
+    print(g)
+    print('grup: ',grup)
     fitxer = open(name, mode='r')
     
     
@@ -79,9 +80,13 @@ def openfile():
                 
           
 def importa():
-    print(codis_linia)
-    for i, v in codis_linia.items():
-        print("el codi {} te el valor {}".format(i, v.get()))
+    print('modul importa')
+    print(name, grup)
+    #for i, v in codis_linia.items():
+        
+     #   print("el codi {} te el valor {}".format(i, v.get()))
+    importa(name, grup, codis_linia)
+    app.destroy()
 
 
 name=None
