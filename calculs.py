@@ -6,7 +6,7 @@ Created on 23 set. 2015
 #import FreeCAD
 #from Draft_topo  import DraftVecUtils
 import math
-from math import sqrt
+from math import sqrt, degrees, pi, radians
 
 
 class calculs():
@@ -14,30 +14,16 @@ class calculs():
     classdocs
     '''
 
-    def azimut(self,p1=(100,100,1000),p2=(-5000,100,1000) ):
+    def azimut(self,p1=(100,100,1000),p2=(5000,1100,1000) ):
         
-        Az = ((math.atan2( p2[0]-p1[0],p2[1]-p1[1]))*200/math.pi)
-        if p2[0]-p1[0]>0:
-            if  p2[1]-p1[1]<0:
-                Az = Az + 200
-            if p2[1]-p1[1]==0:
-                Az = 100
-        if p2[0]-p1[0]<0 :
-            if p2[1]-p1[1]<0:
-                Az = Az + 200
-            if p2[1]-p1[1]==0:
-                Az =300
-        if p2[0]-p1[0]<0 and  p2[1]-p1[1]>0:
-            Az = Az + 400
-            
-        print('azimut:',Az)
+        Az = ((math.atan2( p2[0]-p1[0],p2[1]-p1[1])))
+        print('azimut: ' , Az*200/pi)
         return Az
         
-    def angle(self,p1=(-400,100,1000),p2=(400,400,1000),v=(100,100,1000)):
-        angle_v = abs(self.azimut(v,p1)-self.azimut(v,p2))
-        if angle_v>200:
-            angle_v = 400-angle_v
-        print('angle:', angle_v)
+    def angle(self,p1=(50000,3000,1000),p2=(10000,50000,1000),v=(10000,10000,1000)):
+        angle_v =self.azimut(v,p1)-self.azimut(v,p2)
+        print(angle_v)
+        print('angle:', (math.degrees(angle_v)*400)/360)
         return angle_v
     
     
@@ -76,17 +62,24 @@ class clotoide(calculs):
         Calcula l'angle de la tangent del trianle isosceles amb l'angle entre les dues rectes
         '''
         if not desCircAng:
+            vd= degrees(self.v)*400/360
+            vr= self.v
             
-            t= (200-self.v)/2  # es necessita el complementari de angle/2 
+            print('abns del tau: ' , vd)
+
+            t=  abs(200-vd)/2 # es necessita el complementari de angle/2 
         else:
             t = 100-(desCircAng/2+self.v/2)
-            
-        return t
+        print('desprestau: ' , t)
+        print('tau radiats: ', radians(t))
+        return radians(t*360/400)
     
     def desarrollo_clotoide(self):
         t = self.t
         R = self.R 
         L=t*2*R 
+        print(t)
+        print(R)
         print('desarrollo de la clotoide')
         print(L)        
         return L
@@ -97,6 +90,7 @@ class clotoide(calculs):
         A=sqrt(L*R)
         print('parametre de la clotoide')
         print(A)
+
         return(A)
         
     def punt_tang_circular(self):
@@ -110,6 +104,7 @@ class clotoide(calculs):
         x_f=L-(L**5/(10*((2*R*L)**2)))+(L**9/(216*((2*R*L)**4)))-(L**13/(9360*((2*R*L)**6)))    
         y_f=(L**3/(3*((2*R*L))))+(L**7/(42*((2*R*L)**3)))-(L**11/(1320*((2*R*L)**5)))+(L**15/(75600*((2*R*L)**7)))
         punt = (x_f,y_f)
+        print('F: ', punt)
         return(punt)
     def tang_llarga(self):
         '''
@@ -153,6 +148,8 @@ class clotoide(calculs):
         return(punt)
         
 clotoide()
+#calculs().angle()
+
        
         
 
