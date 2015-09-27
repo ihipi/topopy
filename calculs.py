@@ -6,7 +6,8 @@ Created on 23 set. 2015
 #import FreeCAD
 #from Draft_topo  import DraftVecUtils
 import math
-from math import sqrt, degrees, pi, radians
+from math import sqrt, degrees, pi, radians, sin, cos
+from aptdaemon.policykit1 import PK_ACTION_CANCEL_FOREIGN
 
 
 class calculs():
@@ -15,19 +16,58 @@ class calculs():
     '''
 
     def azimut(self,p1=(100,100,1000),p2=(5000,1100,1000) ):
-        
-        Az = ((math.atan2( p2[0]-p1[0],p2[1]-p1[1])))
+        '''
+        Calcula l'azimyut entre dos punt i el torna en radians
+        '''
+        Az = ((math.atan2( p2[0]-p1[0],p2[1]-p1[1])))           #calcula  l'azimut en radians
         print('azimut: ' , Az*200/pi)
         return Az
         
     def angle(self,p1=(50000,3000,1000),p2=(10000,50000,1000),v=(10000,10000,1000)):
+        '''
+        Calcula l'angle entre dues rectes i el retorna com a radians
+        '''
         angle_v =self.azimut(v,p1)-self.azimut(v,p2)
         print(angle_v)
         print('angle:', (math.degrees(angle_v)*400)/360)
         return angle_v
     
-    
-    
+    def dist_recta(self,p1=(100,100,1000),p2=(5000,100,1000),dist= 50, az=None):
+        '''
+        Calcula un punt en un "pk" d'una recta donada per dos punts o un azimut
+        '''
+        if az == None:
+            az = self.azimut(p1, p2)
+            
+        x = p1[0] + dist * sin(az)
+        y = p1[1] + dist * cos(az)
+        punt = [x,y]
+        print(punt)
+        return punt
+    def pk_dist(self,p1=(100,100,1000),p2=(5000,100,1000),  pk=50 , dist= 50, az = None ,pk_i =None):
+        '''
+        Calcula un punt en un "pk" i distancia d'una recta donada per dos punts
+        '''        
+        if pk_i:
+            pk = pk +pk_i
+            
+        if not az:
+            az = self.azimut(p1, p2)
+        punt = self.dist_recta(p1,dist = pk,az = az)
+            
+        if dist != 0:
+            if dist > 0:
+                az = az+ pi/2
+                print(az)
+            else:
+                az = az-pi/2
+                print(az)
+
+            punt = self.dist_recta(punt,dist = abs(dist),az = az)
+        
+        
+        
+        
 class clotoide(calculs):    
     def __init__(self,p1=(50000,3000,1000),p2=(10000,50000,1000),v=(10000,10000,1000),r=300, DesCir = None):
            
@@ -65,13 +105,11 @@ class clotoide(calculs):
             vd= degrees(self.v)*400/360
             vr= self.v
             
-            print('abns del tau: ' , vd)
 
             t=  abs(200-vd)/2 # es necessita el complementari de angle/2 
         else:
             t = 100-(desCircAng/2+self.v/2)
-        print('desprestau: ' , t)
-        print('tau radiats: ', radians(t))
+        print('tau radiats: ', radians(t*360/400))
         return radians(t*360/400)
     
     def desarrollo_clotoide(self):
@@ -113,7 +151,7 @@ class clotoide(calculs):
         punt_tangencia = self.F
         X = punt_tangencia[0]  
         Y = punt_tangencia[1]
-        Tl = X-(Y/float(math.tan(self.t)))
+        Tl = X-(Y/float(math.tan(self.t)))  
         
         print('tangent llarga')
         print(Tl)    
@@ -147,9 +185,10 @@ class clotoide(calculs):
         print(punt)
         return(punt)
         
-clotoide()
+#clotoide()
 #calculs().angle()
-
+calculs().dist_recta([150,100], dist=-50, az=pi)
+calculs().pk_dist()
        
         
 
