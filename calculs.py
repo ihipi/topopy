@@ -6,8 +6,7 @@ Created on 23 set. 2015
 #import FreeCAD
 #from Draft_topo  import DraftVecUtils
 import math
-from math import sqrt, degrees, pi, radians, sin, cos
-from aptdaemon.policykit1 import PK_ACTION_CANCEL_FOREIGN
+from math import sqrt, degrees, pi, radians, sin, cos, tan
 
 
 class calculs():
@@ -67,7 +66,28 @@ class calculs():
         
         
         
-        
+class circular(calculs):
+        def __init__(self,p1=(50000,3000,1000),p2=(10000,50000,1000),v=(10000,10000,1000),r=300):
+            self.p1 = p1
+            self.p2 = p2
+            self.vertex = v
+            self.v=self.angle(self.p1, self.p2, self.vertex)    #angle entre les dues rectes
+            self.R = r 
+            self.v_R = pi-self.v
+            self.tang_in = self.dist_recta(self.vertex, self.p1, self.tang_in_out())
+            self.tang_out = self.dist_recta(self.vertex, self.p2, self.tang_in_out())
+          
+        def tang_in_out(self):
+            '''
+            Calcula la distancia de les tangents d'entrada i sortida
+            '''
+            tang = self.R * tan(self.v_R/2)  
+            return tang
+        def info(self):
+            print('angle entre rectes: ', self.v,
+                  'angle de la curva: ', self.v_R,
+                  'tang entrada: ', self.tang_in,
+                  'tang sortida: ', self.tang_out)
 class clotoide(calculs):    
     def __init__(self,p1=(50000,3000,1000),p2=(10000,50000,1000),v=(10000,10000,1000),r=300, DesCir = None):
            
@@ -187,8 +207,8 @@ class clotoide(calculs):
         
 #clotoide()
 #calculs().angle()
-calculs().dist_recta([150,100], dist=-50, az=pi)
-calculs().pk_dist()
-       
+#calculs().dist_recta([150,100], dist=-50, az=pi)
+#calculs().pk_dist()
+circular().info()       
         
 
